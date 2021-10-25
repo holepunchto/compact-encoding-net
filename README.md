@@ -35,6 +35,8 @@ cenc.decode(port, buffer)
 
 Codec for IPv4 addresses.
 
+> :warning: The codec is only defined for valid IPv4 addresses.
+
 ```js
 const { ipv4 } = require('compact-encoding-net')
 ```
@@ -76,6 +78,8 @@ cenc.decode(ipv4Address, buffer)
 ### `ipv6`
 
 Codec for IPv6 addresses.
+
+> :warning: The codec is only defined for valid IPv6 addresses.
 
 ```js
 const { ipv6 } = require('compact-encoding-net')
