@@ -74,6 +74,9 @@ module.exports = {
 }
 
 function encodeIPv4 (state, string) {
+  const start = state.start
+  const end = start + 4
+
   let i = 0
 
   while (i < string.length) {
@@ -86,6 +89,8 @@ function encodeIPv4 (state, string) {
 
     state.buffer[state.start++] = n
   }
+
+  state.start = end
 }
 
 function encodeIPv6 (state, string) {
