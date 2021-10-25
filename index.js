@@ -2,55 +2,54 @@ const c = require('compact-encoding')
 
 const port = c.uint16
 
-const address = (family, address) => {
+const address = (host) => {
   return {
     preencode (state, m) {
-      address.preencode(state, m.address)
+      host.preencode(state, m.host)
       port.preencode(state, m.port)
     },
     encode (state, m) {
-      address.encode(state, m.address)
+      host.encode(state, m.host)
       port.encode(state, m.port)
     },
     decode (state) {
       return {
-        family,
-        address: address.decode(state),
+        host: host.decode(state),
         port: port.decode(state)
       }
     }
   }
 }
 
-const ipv4Address = {
+const ipv4 = {
   preencode (state, m) {
     state.end += 4
   },
   encode (state, m) {
-    const ip = parseIPv4(m)
-    for (let i = 0; i < 4; i++) c.uint.encode(state, ip[i])
+    encodeIPv4(state, m)
   },
   decode (state) {
+    if (state.end - state.start < 4) throw new Error('Out of bounds')
     return (
-      c.uint.decode(state) + '.' +
-      c.uint.decode(state) + '.' +
-      c.uint.decode(state) + '.' +
-      c.uint.decode(state)
+      state.buffer[state.start++] + '.' +
+      state.buffer[state.start++] + '.' +
+      state.buffer[state.start++] + '.' +
+      state.buffer[state.start++]
     )
   }
 }
 
-const ipv4 = address('IPv4', ipv4Address)
+const ipv4Address = address(ipv4)
 
-const ipv6Address = {
+const ipv6 = {
   preencode (state, m) {
     state.end += 16
   },
   encode (state, m) {
-    const ip = parseIPv6(m)
-    for (let i = 0; i < 8; i++) c.uint16.encode(state, ip[i])
+    encodeIPv6(state, m)
   },
   decode (state) {
+    if (state.end - state.start < 16) throw new Error('Out of bounds')
     return (
       c.uint16.decode(state).toString(16) + ':' +
       c.uint16.decode(state).toString(16) + ':' +
@@ -64,65 +63,41 @@ const ipv6Address = {
   }
 }
 
-const ipv6 = address('IPv6', ipv6Address)
-
-const ip = {
-  preencode (state, m) {
-    state.end += 1 // Version
-    if (m.family === 'IPv4') ipv4.preencode(state, m)
-    else ipv6.preencode(state, m)
-  },
-  encode (state, m) {
-    if (m.family === 'IPv4') {
-      c.uint.encode(state, 4)
-      ipv4.encode(state, m)
-    } else {
-      c.uint.encode(state, 6)
-      ipv6.encode(state, m)
-    }
-  },
-  decode (state) {
-    return c.uint.decode(state) === 4 ? ipv4.decode(state) : ipv6.decode(state)
-  }
-}
+const ipv6Address = address(ipv6)
 
 module.exports = {
   port,
   ipv4,
+  ipv4Address,
   ipv6,
-  ip
+  ipv6Address
 }
 
-function parseIPv4 (string) {
-  const ip = new Array(4)
-
+function encodeIPv4 (state, string) {
   let i = 0
-  let j = 0
-  let c
 
-  while (i < string.length && j < 4) {
+  while (i < string.length) {
     let n = 0
+    let c
 
     while (i < string.length && (c = string.charCodeAt(i++)) !== /* . */ 0x2e) {
       n = n * 10 + (c - /* 0 */ 0x30)
     }
 
-    ip[j++] = n
+    state.buffer[state.start++] = n
   }
-
-  return ip
 }
 
-function parseIPv6 (string) {
-  const ip = new Array(8)
+function encodeIPv6 (state, string) {
+  const start = state.start
+  const end = start + 16
 
   let i = 0
-  let j = 0
-  let s = null
-  let c
+  let split = null
 
-  while (i < string.length && j < 8) {
+  while (i < string.length) {
     let n = 0
+    let c
 
     while (i < string.length && (c = string.charCodeAt(i++)) !== /* : */ 0x3a) {
       if (c >= 0x30 && c <= 0x39) n = n * 0x10 + (c - /* 0 */ 0x30)
@@ -130,19 +105,21 @@ function parseIPv6 (string) {
       else if (c >= 0x61 && c <= 0x66) n = n * 0x10 + (c - /* a */ 0x61 + 10)
     }
 
-    ip[j++] = n
+    state.buffer[state.start++] = n
+    state.buffer[state.start++] = n >>> 8
 
     if (i < string.length && string.charCodeAt(i) === /* : */ 0x3a) {
       i++
-      s = j
+      split = state.start
     }
   }
 
-  if (s !== null) {
-    const n = 8 - j
-    for (let i = j - 1; i >= s; i--) ip[i + n] = ip[i]
-    for (let i = s; i < s + n; i++) ip[i] = 0
+  if (split !== null) {
+    const offset = end - state.start
+    state.buffer
+      .copyWithin(split + offset, split)
+      .fill(0, split, split + offset)
   }
 
-  return ip
+  state.start = end
 }

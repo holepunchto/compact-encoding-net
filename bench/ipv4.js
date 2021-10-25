@@ -2,7 +2,7 @@ const bench = require('nanobench')
 const c = require('compact-encoding')
 const { ipv4 } = require('../')
 
-const ip = { family: 'IPv4', address: '1.2.3.4', port: 80 }
+const ip = '1.2.3.4'
 
 bench('ipv4 encode', function (b) {
   b.start()

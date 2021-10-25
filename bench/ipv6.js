@@ -2,7 +2,7 @@ const bench = require('nanobench')
 const c = require('compact-encoding')
 const { ipv6 } = require('../')
 
-const ip = { family: 'IPv6', address: '1:2:3:4:5:6:7:8', port: 80 }
+const ip = '1:2:3:4:5:6:7:8'
 
 bench('ipv6 encode', function (b) {
   b.start()

@@ -42,14 +42,35 @@ const { ipv4 } = require('compact-encoding-net')
 #### Encoding
 
 ```js
-const buffer = cenc.encode(ipv4, { address: '127.0.0.1', port: 8080 })
+const buffer = cenc.encode(ipv4, '127.0.0.1')
 ```
 
 #### Decoding
 
 ```js
 cenc.decode(ipv4, buffer)
-// { family: 'IPv4', address: '127.0.0.1', port: 8080 }
+// '127.0.0.1'
+```
+
+### `ipv4Address`
+
+Codec for IPv4 addresses plus a port.
+
+```js
+const { ipv4Address } = require('compact-encoding-net')
+```
+
+#### Encoding
+
+```js
+const buffer = cenc.encode(ipv4, { host: '127.0.0.1', port: 8080 })
+```
+
+#### Decoding
+
+```js
+cenc.decode(ipv4Address, buffer)
+// { host: '127.0.0.1', port: 8080 }
 ```
 
 ### `ipv6`
@@ -63,42 +84,33 @@ const { ipv6 } = require('compact-encoding-net')
 #### Encoding
 
 ```js
-const buffer = cenc.encode(ipv6, { address: '::1', port: 8080 })
+const buffer = cenc.encode(ipv6, '::1')
 ```
 
 #### Decoding
 
 ```js
-cenc.decode(ipv4, buffer)
-// { family: 'IPv6', address: '0:0:0:0:0:0:0:1', port: 8080 }
+cenc.decode(ipv6, buffer)
+// '0:0:0:0:0:0:0:1'
 ```
 
-### `ip`
+### `ipv6Address`
 
-Codec for general IP addresses.
+Codec for IPv6 addresses plus a port.
 
 ```js
-const { ip } = require('compact-encoding-net')
+const { ipv6Address } = require('compact-encoding-net')
 ```
 
 #### Encoding
 
 ```js
-const ipv4 = cenc.encode(ip, { family: 'IPv4', address: '127.0.0.1', port: 8080 })
-```
-
-```js
-const ipv6 = cenc.encode(ip, { family: 'IPv6', address: '::1', port: 8080 })
+const buffer = cenc.encode(ipv6Address, { host: '::1', port: 8080 })
 ```
 
 #### Decoding
 
 ```js
-cenc.decode(ip, ipv4)
-// { family: 'IPv4', address: '127.0.0.1', port: 8080 }
-```
-
-```js
-cenc.decode(ip, ipv6)
-// { family: 'IPv6', address: '0:0:0:0:0:0:0:1', port: 8080 }
+cenc.decode(ipv6Address, buffer)
+// { host: '0:0:0:0:0:0:0:1', port: 8080 }
 ```
