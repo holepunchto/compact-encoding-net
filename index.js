@@ -28,9 +28,7 @@ const ipv4Address = {
   },
   encode (state, m) {
     const ip = parseIPv4(m)
-    for (let i = 0; i < 4; i++) {
-      c.uint.encode(state, ip[i])
-    }
+    for (let i = 0; i < 4; i++) c.uint.encode(state, ip[i])
   },
   decode (state) {
     return (
@@ -50,9 +48,7 @@ const ipv6Address = {
   },
   encode (state, m) {
     const ip = parseIPv6(m)
-    for (let i = 0; i < 8; i++) {
-      c.uint16.encode(state, ip[i])
-    }
+    for (let i = 0; i < 8; i++) c.uint16.encode(state, ip[i])
   },
   decode (state) {
     return (
@@ -86,9 +82,7 @@ const ip = {
     }
   },
   decode (state) {
-    return c.uint.decode(state) === 4
-      ? ipv4.decode(state)
-      : ipv6.decode(state)
+    return c.uint.decode(state) === 4 ? ipv4.decode(state) : ipv6.decode(state)
   }
 }
 
@@ -131,13 +125,9 @@ function parseIPv6 (string) {
     let n = 0
 
     while (i < string.length && (c = string.charCodeAt(i++)) !== /* : */ 0x3a) {
-      if (c >= 0x30 && c <= 0x39) {
-        n = n * 0x10 + (c - /* 0 */ 0x30)
-      } else if (c >= 0x41 && c <= 0x46) {
-        n = n * 0x10 + (c - /* A */ 0x41 + 10)
-      } else if (c >= 0x61 && c <= 0x66) {
-        n = n * 0x10 + (c - /* a */ 0x61 + 10)
-      }
+      if (c >= 0x30 && c <= 0x39) n = n * 0x10 + (c - /* 0 */ 0x30)
+      else if (c >= 0x41 && c <= 0x46) n = n * 0x10 + (c - /* A */ 0x41 + 10)
+      else if (c >= 0x61 && c <= 0x66) n = n * 0x10 + (c - /* a */ 0x61 + 10)
     }
 
     ip[j++] = n
