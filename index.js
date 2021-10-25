@@ -25,9 +25,7 @@ const ipv4 = {
   preencode (state, m) {
     state.end += 4
   },
-  encode (state, m) {
-    encodeIPv4(state, m)
-  },
+  encode: encodeIPv4,
   decode (state) {
     if (state.end - state.start < 4) throw new Error('Out of bounds')
     return (
@@ -45,9 +43,7 @@ const ipv6 = {
   preencode (state, m) {
     state.end += 16
   },
-  encode (state, m) {
-    encodeIPv6(state, m)
-  },
+  encode: encodeIPv6,
   decode (state) {
     if (state.end - state.start < 16) throw new Error('Out of bounds')
     return (
