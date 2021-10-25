@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hypercore-skunkworks/compact-encoding-net.git"
+    "url": "git+https://github.com/compact-encoding/compact-encoding-net.git"
   },
   "author": "Kasper Isager Dalsgarð <kasper@funktionel.co>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/hypercore-skunkworks/compact-encoding-net/issues"
+    "url": "https://github.com/compact-encoding/compact-encoding-net/issues"
   },
-  "homepage": "https://github.com/hypercore-skunkworks/compact-encoding-net#readme",
+  "homepage": "https://github.com/compact-encoding/compact-encoding-net#readme",
   "dependencies": {
     "compact-encoding": "^2.4.1"
   },
