@@ -21,27 +21,27 @@ test('ipv4', (t) => {
 
 test('ipv6', (t) => {
   const ip = '1:2:3:4:5:6:7:8'
-  const buf = Buffer.from([1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0])
+  const buf = Buffer.from([0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8])
 
   t.alike(c.encode(ipv6, ip), buf)
   t.alike(c.decode(ipv6, buf), ip)
 
   t.test('abbreviated', (t) => {
-    const buf = Buffer.from([1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 8, 0])
+    const buf = Buffer.from([0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 8])
 
     t.alike(c.encode(ipv6, '1:2::7:8'), buf)
     t.alike(c.decode(ipv6, buf), '1:2:0:0:0:0:7:8')
   })
 
   t.test('prefix abbreviated', (t) => {
-    const buf = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 6, 0, 7, 0, 8, 0])
+    const buf = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 6, 0, 7, 0, 8])
 
     t.alike(c.encode(ipv6, '::5:6:7:8'), buf)
     t.alike(c.decode(ipv6, buf), '0:0:0:0:5:6:7:8')
   })
 
   t.test('suffix abbreviated', (t) => {
-    const buf = Buffer.from([1, 0, 2, 0, 3, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    const buf = Buffer.from([0, 1, 0, 2, 0, 3, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0])
 
     t.alike(c.encode(ipv6, '1:2:3:4::'), buf)
     t.alike(c.decode(ipv6, buf), '1:2:3:4:0:0:0:0')
@@ -55,14 +55,14 @@ test('ipv6', (t) => {
   })
 
   t.test('lowercase hex', (t) => {
-    const buf = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xcd, 0xab])
+    const buf = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xab, 0xcd])
 
     t.alike(c.encode(ipv6, '::abcd'), buf)
     t.alike(c.decode(ipv6, buf), '0:0:0:0:0:0:0:abcd')
   })
 
   t.test('uppercase hex', (t) => {
-    const buf = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xcd, 0xab])
+    const buf = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xab, 0xcd])
 
     t.alike(c.encode(ipv6, '::ABCD'), buf)
     t.alike(c.decode(ipv6, buf), '0:0:0:0:0:0:0:abcd')

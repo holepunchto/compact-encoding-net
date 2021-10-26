@@ -47,14 +47,14 @@ const ipv6 = {
   decode (state) {
     if (state.end - state.start < 16) throw new Error('Out of bounds')
     return (
-      c.uint16.decode(state).toString(16) + ':' +
-      c.uint16.decode(state).toString(16) + ':' +
-      c.uint16.decode(state).toString(16) + ':' +
-      c.uint16.decode(state).toString(16) + ':' +
-      c.uint16.decode(state).toString(16) + ':' +
-      c.uint16.decode(state).toString(16) + ':' +
-      c.uint16.decode(state).toString(16) + ':' +
-      c.uint16.decode(state).toString(16)
+      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
+      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
+      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
+      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
+      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
+      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
+      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
+      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16)
     )
   }
 }
@@ -106,8 +106,8 @@ function encodeIPv6 (state, string) {
       else if (c >= 0x61 && c <= 0x66) n = n * 0x10 + (c - /* a */ 0x61 + 10)
     }
 
-    state.buffer[state.start++] = n
     state.buffer[state.start++] = n >>> 8
+    state.buffer[state.start++] = n
 
     if (i < string.length && string.charCodeAt(i) === /* : */ 0x3a) {
       i++
