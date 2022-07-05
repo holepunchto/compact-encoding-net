@@ -135,17 +135,11 @@ const ip = {
 
 const ipAddress = {
   preencode (state, m) {
-    const family = m.host.includes(':') ? 6 : 4
-    c.uint8.preencode(state, family)
-    if (family === 4) ipv4.preencode(state)
-    else ipv6.preencode(state)
+    ip.preencode(state, m.host)
     port.preencode(state, m.port)
   },
   encode (state, m) {
-    const family = m.host.includes(':') ? 6 : 4
-    c.uint8.encode(state, family)
-    if (family === 4) ipv4.encode(state, m.host)
-    else ipv6.encode(state, m.host)
+    ip.encode(state, m.host)
     port.encode(state, m.port)
   },
   decode (state) {
