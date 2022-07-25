@@ -113,10 +113,51 @@ const ipv6 = {
 
 const ipv6Address = address(ipv6)
 
+const ip = {
+  preencode (state, string) {
+    const family = string.includes(':') ? 6 : 4
+    c.uint8.preencode(state, family)
+    if (family === 4) ipv4.preencode(state)
+    else ipv6.preencode(state)
+  },
+  encode (state, string) {
+    const family = string.includes(':') ? 6 : 4
+    c.uint8.encode(state, family)
+    if (family === 4) ipv4.encode(state, string)
+    else ipv6.encode(state, string)
+  },
+  decode (state) {
+    const family = c.uint8.decode(state)
+    if (family === 4) return ipv4.decode(state)
+    else return ipv6.decode(state)
+  }
+}
+
+const ipAddress = {
+  preencode (state, m) {
+    ip.preencode(state, m.host)
+    port.preencode(state, m.port)
+  },
+  encode (state, m) {
+    ip.encode(state, m.host)
+    port.encode(state, m.port)
+  },
+  decode (state) {
+    const family = c.uint8.decode(state)
+    return {
+      host: family === 4 ? ipv4.decode(state) : ipv6.decode(state),
+      family,
+      port: port.decode(state)
+    }
+  }
+}
+
 module.exports = {
   port,
   ipv4,
   ipv4Address,
   ipv6,
-  ipv6Address
+  ipv6Address,
+  ip,
+  ipAddress
 }

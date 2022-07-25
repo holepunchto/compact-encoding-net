@@ -1,7 +1,7 @@
 import test from 'brittle'
 import c from 'compact-encoding'
 
-import { port, ipv4, ipv6 } from './index.js'
+import { port, ipv4, ipv6, ip, ipAddress } from './index.js'
 
 test('port', (t) => {
   const p = 0x1234
@@ -67,4 +67,40 @@ test('ipv6', (t) => {
     t.alike(c.encode(ipv6, '::ABCD'), buf)
     t.alike(c.decode(ipv6, buf), '0:0:0:0:0:0:0:abcd')
   })
+})
+
+test('dual ip', (t) => {
+  {
+    const host = '1.2.3.4'
+
+    t.alike(c.decode(ip, c.encode(ip, host)), host, 'ipv4')
+  }
+  {
+    const host = '1:2:3:4:5:6:7:8'
+
+    t.alike(c.decode(ip, c.encode(ip, host)), host, 'ipv6')
+  }
+})
+
+test('dual ip + port', (t) => {
+  const port = 1234
+
+  {
+    const host = '1.2.3.4'
+
+    t.alike(c.decode(ipAddress, c.encode(ipAddress, { host, port })), {
+      host,
+      family: 4,
+      port
+    }, 'ipv4')
+  }
+  {
+    const host = '1:2:3:4:5:6:7:8'
+
+    t.alike(c.decode(ipAddress, c.encode(ipAddress, { host, port })), {
+      host,
+      family: 6,
+      port
+    }, 'ipv6')
+  }
 })
