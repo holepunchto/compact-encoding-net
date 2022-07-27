@@ -2,7 +2,7 @@ const c = require('compact-encoding')
 
 const port = c.uint16
 
-const address = (host) => {
+const address = (host, family) => {
   return {
     preencode (state, m) {
       host.preencode(state, m.host)
@@ -15,6 +15,7 @@ const address = (host) => {
     decode (state) {
       return {
         host: host.decode(state),
+        family,
         port: port.decode(state)
       }
     }
@@ -22,7 +23,7 @@ const address = (host) => {
 }
 
 const ipv4 = {
-  preencode (state, m) {
+  preencode (state) {
     state.end += 4
   },
   encode (state, string) {
@@ -55,10 +56,10 @@ const ipv4 = {
   }
 }
 
-const ipv4Address = address(ipv4)
+const ipv4Address = address(ipv4, 4)
 
 const ipv6 = {
-  preencode (state, m) {
+  preencode (state) {
     state.end += 16
   },
   encode (state, string) {
@@ -111,7 +112,7 @@ const ipv6 = {
   }
 }
 
-const ipv6Address = address(ipv6)
+const ipv6Address = address(ipv6, 6)
 
 const ip = {
   preencode (state, string) {
