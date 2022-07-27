@@ -119,6 +119,50 @@ cenc.decode(ipv6Address, buffer)
 // { host: '0:0:0:0:0:0:0:1', port: 8080 }
 ```
 
+### `ip`
+
+Codec for dual IPv4/6 addresses.
+
+> :warning: The codec is only defined for valid IPv4 and IPv6 addresses.
+
+```js
+const { ip } = require('compact-encoding-net')
+```
+
+#### Encoding
+
+```js
+const buffer = cenc.encode(ip, '::1')
+```
+
+#### Decoding
+
+```js
+cenc.decode(ip, buffer)
+// '0:0:0:0:0:0:0:1'
+```
+
+### `ipAddress`
+
+Codec for dual IPv4/6 addresses plus a port.
+
+```js
+const { ipAddress } = require('compact-encoding-net')
+```
+
+#### Encoding
+
+```js
+const buffer = cenc.encode(ipAddress, { host: '::1', port: 8080 })
+```
+
+#### Decoding
+
+```js
+cenc.decode(ipv6Address, buffer)
+// { host: '0:0:0:0:0:0:0:1', family: 6, port: 8080 }
+```
+
 ## License
 
 ISC
