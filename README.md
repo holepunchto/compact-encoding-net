@@ -165,4 +165,4 @@ cenc.decode(ipv6Address, buffer)
 
 ## License
 
-ISC
+Apache 2.0
