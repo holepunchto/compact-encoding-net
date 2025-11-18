@@ -26,7 +26,7 @@ const ipv4 = {
   preencode(state) {
     state.end += 4
   },
-  encode (state, string) {
+  encode(state, string) {
     string = string || '127.0.0.1'
 
     const start = state.start
@@ -168,7 +168,7 @@ const ip = {
     if (family === 4) ipv4.preencode(state)
     else ipv6.preencode(state)
   },
-  encode (state, string) {
+  encode(state, string) {
     string = string || '127.0.0.1'
 
     const family = string.includes(':') ? 6 : 4
