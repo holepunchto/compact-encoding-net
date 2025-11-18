@@ -1,7 +1,15 @@
 import test from 'brittle'
 import c from 'compact-encoding'
 
-import { port, ipv4, ipv6, ipv4Address, ipv6Address, ip, ipAddress } from './index.js'
+import {
+  port,
+  ipv4,
+  ipv6,
+  ipv4Address,
+  ipv6Address,
+  ip,
+  ipAddress
+} from './index.js'
 
 test('port', (t) => {
   const p = 0x1234
@@ -66,14 +74,18 @@ test('ipv6', (t) => {
   })
 
   t.test('lowercase hex', (t) => {
-    const buf = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xab, 0xcd])
+    const buf = Buffer.from([
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xab, 0xcd
+    ])
 
     t.alike(c.encode(ipv6, '::abcd'), buf)
     t.alike(c.decode(ipv6, buf), '0:0:0:0:0:0:0:abcd')
   })
 
   t.test('uppercase hex', (t) => {
-    const buf = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xab, 0xcd])
+    const buf = Buffer.from([
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xab, 0xcd
+    ])
 
     t.alike(c.encode(ipv6, '::ABCD'), buf)
     t.alike(c.decode(ipv6, buf), '0:0:0:0:0:0:0:abcd')
@@ -110,19 +122,27 @@ test('dual ip + port', (t) => {
   {
     const host = '1.2.3.4'
 
-    t.alike(c.decode(ipAddress, c.encode(ipAddress, { host, port })), {
-      host,
-      family: 4,
-      port
-    }, 'ipv4')
+    t.alike(
+      c.decode(ipAddress, c.encode(ipAddress, { host, port })),
+      {
+        host,
+        family: 4,
+        port
+      },
+      'ipv4'
+    )
   }
   {
     const host = '1:2:3:4:5:6:7:8'
 
-    t.alike(c.decode(ipAddress, c.encode(ipAddress, { host, port })), {
-      host,
-      family: 6,
-      port
-    }, 'ipv6')
+    t.alike(
+      c.decode(ipAddress, c.encode(ipAddress, { host, port })),
+      {
+        host,
+        family: 6,
+        port
+      },
+      'ipv6'
+    )
   }
 })

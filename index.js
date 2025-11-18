@@ -4,15 +4,15 @@ const port = c.uint16
 
 const address = (host, family) => {
   return {
-    preencode (state, m) {
+    preencode(state, m) {
       host.preencode(state, m.host)
       port.preencode(state, m.port)
     },
-    encode (state, m) {
+    encode(state, m) {
       host.encode(state, m.host)
       port.encode(state, m.port)
     },
-    decode (state) {
+    decode(state) {
       return {
         host: host.decode(state),
         family,
@@ -23,10 +23,10 @@ const address = (host, family) => {
 }
 
 const ipv4 = {
-  preencode (state) {
+  preencode(state) {
     state.end += 4
   },
-  encode (state, string) {
+  encode(state, string) {
     const start = state.start
     const end = start + 4
 
@@ -36,7 +36,10 @@ const ipv4 = {
       let n = 0
       let c
 
-      while (i < string.length && (c = string.charCodeAt(i++)) !== /* . */ 0x2e) {
+      while (
+        i < string.length &&
+        (c = string.charCodeAt(i++)) !== /* . */ 0x2e
+      ) {
         n = n * 10 + (c - /* 0 */ 0x30)
       }
 
@@ -45,12 +48,15 @@ const ipv4 = {
 
     state.start = end
   },
-  decode (state) {
+  decode(state) {
     if (state.end - state.start < 4) throw new Error('Out of bounds')
     return (
-      state.buffer[state.start++] + '.' +
-      state.buffer[state.start++] + '.' +
-      state.buffer[state.start++] + '.' +
+      state.buffer[state.start++] +
+      '.' +
+      state.buffer[state.start++] +
+      '.' +
+      state.buffer[state.start++] +
+      '.' +
       state.buffer[state.start++]
     )
   }
@@ -59,10 +65,10 @@ const ipv4 = {
 const ipv4Address = address(ipv4, 4)
 
 const ipv6 = {
-  preencode (state) {
+  preencode(state) {
     state.end += 16
   },
-  encode (state, string) {
+  encode(state, string) {
     const start = state.start
     const end = start + 16
 
@@ -73,7 +79,10 @@ const ipv6 = {
       let n = 0
       let c
 
-      while (i < string.length && (c = string.charCodeAt(i++)) !== /* : */ 0x3a) {
+      while (
+        i < string.length &&
+        (c = string.charCodeAt(i++)) !== /* : */ 0x3a
+      ) {
         if (c >= 0x30 && c <= 0x39) n = n * 0x10 + (c - /* 0 */ 0x30)
         else if (c >= 0x41 && c <= 0x46) n = n * 0x10 + (c - /* A */ 0x41 + 10)
         else if (c >= 0x61 && c <= 0x66) n = n * 0x10 + (c - /* a */ 0x61 + 10)
@@ -97,17 +106,48 @@ const ipv6 = {
 
     state.start = end
   },
-  decode (state) {
+  decode(state) {
     if (state.end - state.start < 16) throw new Error('Out of bounds')
     return (
-      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
-      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
-      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
-      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
-      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
-      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
-      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16) + ':' +
-      (state.buffer[state.start++] * 256 + state.buffer[state.start++]).toString(16)
+      (
+        state.buffer[state.start++] * 256 +
+        state.buffer[state.start++]
+      ).toString(16) +
+      ':' +
+      (
+        state.buffer[state.start++] * 256 +
+        state.buffer[state.start++]
+      ).toString(16) +
+      ':' +
+      (
+        state.buffer[state.start++] * 256 +
+        state.buffer[state.start++]
+      ).toString(16) +
+      ':' +
+      (
+        state.buffer[state.start++] * 256 +
+        state.buffer[state.start++]
+      ).toString(16) +
+      ':' +
+      (
+        state.buffer[state.start++] * 256 +
+        state.buffer[state.start++]
+      ).toString(16) +
+      ':' +
+      (
+        state.buffer[state.start++] * 256 +
+        state.buffer[state.start++]
+      ).toString(16) +
+      ':' +
+      (
+        state.buffer[state.start++] * 256 +
+        state.buffer[state.start++]
+      ).toString(16) +
+      ':' +
+      (
+        state.buffer[state.start++] * 256 +
+        state.buffer[state.start++]
+      ).toString(16)
     )
   }
 }
@@ -115,19 +155,19 @@ const ipv6 = {
 const ipv6Address = address(ipv6, 6)
 
 const ip = {
-  preencode (state, string) {
+  preencode(state, string) {
     const family = string.includes(':') ? 6 : 4
     c.uint8.preencode(state, family)
     if (family === 4) ipv4.preencode(state)
     else ipv6.preencode(state)
   },
-  encode (state, string) {
+  encode(state, string) {
     const family = string.includes(':') ? 6 : 4
     c.uint8.encode(state, family)
     if (family === 4) ipv4.encode(state, string)
     else ipv6.encode(state, string)
   },
-  decode (state) {
+  decode(state) {
     const family = c.uint8.decode(state)
     if (family === 4) return ipv4.decode(state)
     else return ipv6.decode(state)
@@ -135,15 +175,15 @@ const ip = {
 }
 
 const ipAddress = {
-  preencode (state, m) {
+  preencode(state, m) {
     ip.preencode(state, m.host)
     port.preencode(state, m.port)
   },
-  encode (state, m) {
+  encode(state, m) {
     ip.encode(state, m.host)
     port.encode(state, m.port)
   },
-  decode (state) {
+  decode(state) {
     const family = c.uint8.decode(state)
     return {
       host: family === 4 ? ipv4.decode(state) : ipv6.decode(state),
