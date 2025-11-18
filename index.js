@@ -6,11 +6,11 @@ const address = (host, family) => {
   return {
     preencode(state, m) {
       host.preencode(state, m.host)
-      port.preencode(state, m.port)
+      port.preencode(state, m.port || 0)
     },
     encode(state, m) {
       host.encode(state, m.host)
-      port.encode(state, m.port)
+      port.encode(state, m.port || 0)
     },
     decode(state) {
       return {
@@ -26,7 +26,9 @@ const ipv4 = {
   preencode(state) {
     state.end += 4
   },
-  encode(state, string) {
+  encode (state, string) {
+    string = string || '127.0.0.1'
+
     const start = state.start
     const end = start + 4
 
@@ -69,6 +71,8 @@ const ipv6 = {
     state.end += 16
   },
   encode(state, string) {
+    string = string || '::1'
+
     const start = state.start
     const end = start + 16
 
@@ -156,19 +160,26 @@ const ipv6Address = address(ipv6, 6)
 
 const ip = {
   preencode(state, string) {
+    string = string || '127.0.0.1'
+
     const family = string.includes(':') ? 6 : 4
     c.uint8.preencode(state, family)
+
     if (family === 4) ipv4.preencode(state)
     else ipv6.preencode(state)
   },
-  encode(state, string) {
+  encode (state, string) {
+    string = string || '127.0.0.1'
+
     const family = string.includes(':') ? 6 : 4
     c.uint8.encode(state, family)
+
     if (family === 4) ipv4.encode(state, string)
     else ipv6.encode(state, string)
   },
   decode(state) {
     const family = c.uint8.decode(state)
+
     if (family === 4) return ipv4.decode(state)
     else return ipv6.decode(state)
   }
@@ -177,11 +188,11 @@ const ip = {
 const ipAddress = {
   preencode(state, m) {
     ip.preencode(state, m.host)
-    port.preencode(state, m.port)
+    port.preencode(state, m.port || 0)
   },
   encode(state, m) {
     ip.encode(state, m.host)
-    port.encode(state, m.port)
+    port.encode(state, m.port || 0)
   },
   decode(state) {
     const family = c.uint8.decode(state)

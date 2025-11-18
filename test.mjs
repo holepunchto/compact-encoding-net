@@ -38,6 +38,17 @@ test('ipv4 + port', (t) => {
   })
 })
 
+test('default ipv4', (t) => {
+  const host = null
+  const port = 1234
+
+  t.alike(c.decode(ipv4Address, c.encode(ipv4Address, { host, port })), {
+    host: '127.0.0.1',
+    family: 4,
+    port
+  })
+})
+
 test('ipv6', (t) => {
   const ip = '1:2:3:4:5:6:7:8'
   const buf = Buffer.from([0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8])
@@ -98,6 +109,17 @@ test('ipv6 + port', (t) => {
 
   t.alike(c.decode(ipv6Address, c.encode(ipv6Address, { host, port })), {
     host,
+    family: 6,
+    port
+  })
+})
+
+test('default ipv6', (t) => {
+  const host = null
+  const port = 1234
+
+  t.alike(c.decode(ipv6Address, c.encode(ipv6Address, { host, port })), {
+    host: '0:0:0:0:0:0:0:1',
     family: 6,
     port
   })
