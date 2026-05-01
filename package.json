@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/compact-encoding/compact-encoding-net#readme",
   "dependencies": {
-    "compact-encoding": "^2.4.1"
+    "compact-encoding": "^3.0.0"
   },
   "devDependencies": {
     "brittle": "^3.16.3",
